@@ -1,0 +1,19 @@
+{
+  "name": "airwatch",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ditinc/airwatch.git"
+  },
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/ditinc/airwatch/issues"
+  },
+  "homepage": "https://github.com/ditinc/airwatch#readme",
+  "devDependencies": {
+    "babel-eslint": "^4.1.6",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^2.1.0",
+    "eslint-plugin-react": "^3.11.3"
+  }
+}
