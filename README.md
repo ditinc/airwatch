@@ -7,9 +7,8 @@ Type | URL
 Release :sunny: | http://airwatch-proxy.airwatch-stack.sjmatta.svc.tutum.io/
 Master Branch :rocket: | http://airwatch-proxy-snapshot.airwatch-stack-snapshot.sjmatta.svc.tutum.io/
 
-[![Stories in Ready](https://badge.waffle.io/ditinc/airwatch.png?label=ready&title=Ready)](https://waffle.io/ditinc/airwatch)
-[![Build Status](https://circleci.com/gh/ditinc/airwatch/tree/master.png?style=shield)](https://circleci.com/gh/ditinc/airwatch)
-[![Code Climate](https://codeclimate.com/github/ditinc/airwatch/badges/gpa.svg)](https://codeclimate.com/github/ditinc/airwatch)
+[![Build Status](https://circleci.com/gh/ditinc/airwatch/tree/master.png?style=shield&circle-token=77901e712e4694dcd2db7422c8298a9cadc4b5bc)](https://circleci.com/gh/ditinc/airwatch)
+[![Code Climate](https://codeclimate.com/repos/56703c8d99072c0e9a000d04/badges/6ee0d7cc05902e4cbe62/gpa.svg)](https://codeclimate.com/repos/56703c8d99072c0e9a000d04/feed)
 
 ## Team and Development Process
 - DevOps and Project Lead: sjmatta
