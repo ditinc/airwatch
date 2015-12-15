@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   override:
-    - docker build -t sjmatta/foodwatch .
+    - docker build -t sjmatta/airwatch .
 
 database:
   override:
@@ -14,7 +14,7 @@ test:
   override:
     - curl https://install.meteor.com | sh
     - JASMINE_BROWSER=PhantomJS JASMINE_CLIENT_UNIT=true JASMINE_CLIENT_INTEGRATION=false JASMIN_SERVER_UNIT=true JASMINE_SERVER_INTEGRATION=false meteor --test
-    - docker run -d --name foodwatch --link mongo:mongo -e ROOT_URL=http://localhost -p 80:80 sjmatta/foodwatch
+    - docker run -d --name airwatch --link mongo:mongo -e ROOT_URL=http://localhost -p 80:80 sjmatta/airwatch
     - sleep 5s
     - curl --retry 10 --retry-delay 5 -v http://localhost
 
@@ -23,15 +23,15 @@ deployment:
     branch: release
     commands:
       - docker login -e "$HUB_EMAIL" -u "$HUB_USER" -p "$HUB_PASS"
-      - docker push sjmatta/foodwatch
+      - docker push sjmatta/airwatch
       - sudo pip install tutum
-      - tutum stack update -f tutum.yml foodwatch-stack
-      - tutum service redeploy foodwatch-app
+      - tutum stack update -f tutum.yml airwatch-stack
+      - tutum service redeploy airwatch-app
   master:
     branch: master
     commands:
-      - docker tag sjmatta/foodwatch sjmatta/foodwatch:SNAPSHOT
+      - docker tag sjmatta/airwatch sjmatta/airwatch:SNAPSHOT
       - sudo pip install tutum
-      - tutum push sjmatta/foodwatch:SNAPSHOT
-      - tutum stack update -f tutum-snapshot.yml foodwatch-stack-snapshot
-      - tutum service redeploy foodwatch-app-snapshot
+      - tutum push sjmatta/airwatch:SNAPSHOT
+      - tutum stack update -f tutum-snapshot.yml airwatch-stack-snapshot
+      - tutum service redeploy airwatch-app-snapshot
