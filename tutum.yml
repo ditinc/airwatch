@@ -17,14 +17,20 @@ airwatch-proxy:
     - "443"
   environment:
     - SSL_CERT
+  tags:
+    - airwatch-cluster
 airwatch-mongo:
 # modifying this section will result in a few seconds of downtime for the app
   image: "mongo"
+  tags:
+    - airwatch-cluster
 airwatch-app:
 # modifications can be made to this section without downtime
-  image: "sjmatta/airwatch"
+  image: "tutum.co/sjmatta/airwatch"
   target_num_containers: 2
   links:
     - airwatch-mongo:mongo
   environment:
     ROOT_URL: http://localhost
+  tags:
+    - airwatch-cluster
