@@ -33,26 +33,14 @@
       view = view || {};
       view.zoom = view.zoom || 5;
       view.latlong = view.latlong || [37.8, -92];
-
-      var ml, newLayer;
-      var mapLayers = [];
-
-      for (ml in Meteor.settings["public"].mapLayers) {
-        newLayer = L.tileLayer(Meteor.settings["public"].mapLayers[ml].url, {
-          subdomains: Meteor.settings["public"].mapLayers[ml].subdomains,
-          layerName: Meteor.settings["public"].mapLayers[ml].layerName,
-          type: Meteor.settings["public"].mapLayers[ml].type,
-          ext: Meteor.settings["public"].mapLayers[ml].ext,
-          mapId: Meteor.settings["public"].mapLayers[ml].mapId,
-          maxZoom: Meteor.settings["public"].mapLayers[ml].maxZoom,
-          accessToken: Meteor.settings["public"].mapLayers[ml].accessToken
-        });
-        mapLayers.push(newLayer);
-      }
+      var baseLayer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
+        attribution: "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>",
+        maxZoom: 19
+      });
 
       this.map = L.map(element, {
       zoomControl:false,
-          layers: mapLayers
+          layers: [baseLayer]
       })
       .setView(
         view.latlong ,
