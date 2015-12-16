@@ -123,7 +123,7 @@
         callback(null, upserts);
       },
     }, function(err) {
-      throw err;
+      console.log(err);
     });
     Meteor.setInterval(function() {
       Meteor.call('pollFoodRecalls');
