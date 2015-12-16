@@ -1,7 +1,8 @@
-/*globals Template*/
+/* globals $, Template */
 Template.mapLabel.events({
-  'click #affordanceOpen': function(){   
-    $(".splash").show();
-  }
+  'click #affordanceOpen'() {
+    $('.splash').show();
+  },
 });
+
 Template.mapLabel.rendered = function() {};

@@ -1,7 +1,6 @@
-/*globals Meteor, LUtil, Session */
+/* globals Meteor, LUtil */
 (function () {
-  "use strict";
-	Meteor.startup(function(){
-		LUtil.initLeaflet();
-	});
+  Meteor.startup(function() {
+    LUtil.initLeaflet();
+  });
 })();
