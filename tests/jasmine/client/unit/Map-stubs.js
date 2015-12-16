@@ -1,32 +1,33 @@
-/* globals window */
+/*globals window */
 (function() {
+  "use strict";
   window.L = {
     Icon: {
       Default: {
-        imagePath: null,
-      },
+        imagePath: null
+      }
     },
-    map() {
+    map: function() {
       return {
-        setView() {
+        setView: function(){
           return true;
-        },
+        }
       };
     },
-    addLayer() {},
-    tileLayer() {},
-    geoJson() {
-      return { addTo() {} };
+    addLayer: function() {},
+    tileLayer: function() {},
+    geoJson: function() {
+      return { addTo: function() {} };
     },
-    control() {
+    control: function() {
       return {
-        addTo() {},
-        onAdd() {},
+        addTo: function() {},
+        onAdd: function() {}
       };
     },
     DomUtil: {
-      create() {},
-    },
+      create: function() {}
+    }
   };
   window.fakeGeojson = {
     _layers: {
@@ -34,20 +35,20 @@
         feature: {
           properties: {
             abbreviation: 'AL',
-            name: 'Alabama',
-          },
+            name: 'Alabama'
+          }
         },
-        setStyle() {},
+        setStyle: function() {}
       },
       200: {
         feature: {
           properties: {
             abbreviation: 'AK',
-            name: 'Alaska',
-          },
+            name: 'Alaska'
+          }
         },
-        setStyle() {},
-      },
-    },
+        setStyle: function() {}
+      }
+    }
   };
 })();
