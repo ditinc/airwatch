@@ -1,8 +1,6 @@
-/*globals Meteor, FoodRecalls, console */
+/* globals Meteor, FoodRecalls */
 (function() {
-  "use strict";
-	Meteor.publish("LatestFoodRecalls", function(filter, limit) {
-		if (Meteor.settings.debug) { console.log('filter: %j, limit: %j', filter, limit); }
-		return FoodRecalls.latest(filter, limit);
-	});
+  Meteor.publish('LatestFoodRecalls', function(filter, limit) {
+    return FoodRecalls.latest(filter, limit);
+  });
 })();
