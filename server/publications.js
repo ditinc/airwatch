@@ -1,6 +1,6 @@
-/* globals Meteor, FoodRecalls */
+/* globals Meteor, StateAirQualities */
 (function() {
-  Meteor.publish('LatestFoodRecalls', function(filter, limit) {
-    return FoodRecalls.latest(filter, limit);
+  Meteor.publish('LatestStateAirQualities', function(filter, limit) {
+    return StateAirQualities.latest(filter, limit);
   });
 })();

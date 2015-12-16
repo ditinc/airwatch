@@ -36,7 +36,7 @@ body {
 	opacity: 0.2;
 }
 
-#latestFoodRecallReasonFilter{
+#airQualityReasonFilter{
 	margin: 10px 0px 0px -10px;
 	padding: 0px 0px 0px 4px;
 	border-radius: 4px;
@@ -60,7 +60,7 @@ body {
 	opacity: 0.4;
 }
 
-#latestFoodRecallStateDiv{
+#airQualityStateDiv{
 	margin: 0px 0px 0px 4px;
 }
 

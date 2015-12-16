@@ -1,17 +1,13 @@
 /* LUtil is inspired by leaflet-demo (https://github.com/MeteorHudsonValley/leaflet-demo) */
 /* globals window, L, $, Blaze, Template, Meteor, _, ReactiveVar, moment */
-/* globals FoodRecalls, StatesData */
+/* globals StateAirQualities, StatesData */
 (function () {
   window.LUtil = {
     // reference to the single 'map' object to control
     map: null,
     geojson: null,
     details: null,
-    currentOrigin: null,
     currentSelectedState: null,
-    lines: [],
-    currentDestinations: [],
-    originMarker: null,
     detMinMax: 1,
     filMinMax: 1,
     // location of marker images
@@ -52,98 +48,17 @@
       this.addControls();
     },
 
-    highlightOrigin(state) {
-      const self = this;
-      for (const key in self.geojson._layers) {
-        if (self.geojson._layers.hasOwnProperty(key)) {
-          if (self.geojson._layers[key].feature.properties.abbreviation === state) {
-            self.currentOrigin = self.geojson._layers[key];
-            self.geojson._layers[key].setStyle({
-              weight: 2,
-              opacity: 1,
-              color: 'black',
-              dashArray: '',
-              fillOpacity: 0.6,
-              fillColor: 'blue',
-            });
-          }
-        }
-      }
-    },
-
     resetMap() {
-      $('.recall-detail').html('');
-      $('.recall-detail').scrollTop();
-      $('.recall-detail').hide();
+      $('.airQuality-detail').html('');
+      $('.airQuality-detail').scrollTop();
+      $('.airQuality-detail').hide();
+
       const self = this;
-      if (self.currentDestinations.length !== 0) {
-        for (const state in self.currentDestinations) {
-          if (self.currentOrigin !== self.currentDestinations[state]) {
-            self.geojson.resetStyle(self.currentDestinations[state]);
-          }
-        }
-      }
-
-      _.each(self.lines, function(line) {
-        self.map.removeLayer(self.lines[line]);
-      });
-
-      self.lines = [];
-
-      self.currentDestinations = [];
-
-      if (self.originMarker !== null) {
-        self.map.removeLayer(self.originMarker);
-      }
-
-      if (self.currentOrigin !== null) {
-        self.geojson.resetStyle(self.currentOrigin);
-      }
 
       window.LUtil.detMinMax = 1;
       $('#detMinMaxSpan').removeClass('glyphicon glyphicon-plus');
       $('#detMinMaxSpan').addClass('glyphicon glyphicon-minus');
-      $('.recall-detail').css({ 'height': '250px' });
-    },
-
-    markOrigin(city, state, mfg) {
-      const self = this;
-      if (city === null || state === null) {
-        return;
-      }
-
-      $.getJSON('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + city + ' ' + state + ' USA ', function(data) {
-        const latlon = [data[0].lat, data[0].lon];
-        self.originMarker = L.marker(latlon).addTo(self.map);
-        self.originMarker.bindPopup('<b>' + mfg + '</b><br />' + city + ', ' + state).openPopup();
-      });
-    },
-
-    highlightDestination(states) {
-      const self = this;
-      const parsedStates = this.parseStates(states);
-      for (let st = 0; st < parsedStates.length; st++) {
-        for (const key in self.geojson._layers) {
-          if (self.geojson._layers.hasOwnProperty(key)) {
-            if (self.geojson._layers[key].feature.properties.abbreviation === parsedStates[st]) {
-              self.currentDestinations.push(self.geojson._layers[key]);
-              let fillColor = 'red';
-              let fillOpacity = 0.2;
-              if (self.currentOrigin === self.geojson._layers[key]) {
-                fillColor = 'purple';
-                fillOpacity = 0.4;
-              }
-              self.geojson._layers[key].setStyle({
-                weight: 2,
-                opacity: 1,
-                color: 'black',
-                fillOpacity,
-                fillColor,
-              });
-            }
-          }
-        }
-      }
+      $('.airQuality-detail').css({ 'height': '250px' });
     },
 
     getStateName(stateAbbr) {
@@ -257,17 +172,17 @@
       const self = this;
       // TODO: switch this to onAddHandlerWithTemplate and move the HTML
       // into a Meteor Blaze template
-      const recallSelector = L.control({ position: 'topright' });
-      recallSelector.onAdd = self.onAddHandler('info', '<b>  Recall Filtering </b><a href="#" id="filMinMax" class="pull-left"><span id="filMinMaxSpan" class="glyphicon glyphicon-minus"></span></a> <div id="recallSelector"></div>');
-      recallSelector.addTo(this.map);
-      $('#latestFoodRecallForm').appendTo('#recallSelector').show();
+      const stateSelector = L.control({ position: 'topright' });
+      stateSelector.onAdd = self.onAddHandler('info', '<div id="airQualityStateSelector"></div>');
+      stateSelector.addTo(this.map);
+      $('#airQualityForm').appendTo('#airQualityStateSelector').show();
 
       self.details = L.control({ position: 'bottomright' });
-      self.details.onAdd = self.onAddHandler('info recall-detail', '');
+      self.details.onAdd = self.onAddHandler('info airQuality-detail', '');
       self.details.update = function(props) {
         const myself = this;
         if (props) {
-          Blaze.renderWithData(Template.mapRecallDetails, props, this._div);
+          Blaze.renderWithData(Template.airQualityDetails, props, this._div);
         } else {
           myself.hide();
         }
@@ -298,7 +213,6 @@
       window.LUtil.resetMap();
       const state = $(event.currentTarget).val();
       const template = Template.instance();
-      const reasonFilter = $('#latestFoodRecallReasonFilter').val();
 
       if (window.LUtil.currentSelectedState !== null) {
         window.LUtil.currentSelectedState.setStyle({
@@ -306,17 +220,6 @@
         });
         window.LUtil.currentSelectedState = null;
       }
-
-      if (state === null) {
-        template.filter.set({ reason_for_recall: { $regex: reasonFilter, $options: 'i' } });
-        return FoodRecalls.latest(template.filter.get(), template.limit.get());
-      }
-      template.filter.set(window.LUtil.getCrit(state, reasonFilter));
-
-      // TODO: check recallsByState and verify elements meet inclusion criteria req.
-      template.subscription = template.subscribe('LatestFoodRecalls', template.filter.get(), template.limit.get());
-
-      $('#latestFoodRecalls').select2('data', { id: '', text: 'select a recall' });
 
       for (const key in window.LUtil.geojson._layers) {
         if (window.LUtil.geojson._layers.hasOwnProperty(key)) {
@@ -328,63 +231,7 @@
           }
         }
       }
-      return FoodRecalls.latest(template.filter.get(), template.limit.get());
-    },
-
-    'change #latestFoodRecalls'() {
-      window.LUtil.resetMap();
-
-      if (window.LUtil.currentSelectedState !== null) {
-        window.LUtil.currentSelectedState.setStyle({
-          fillColor: 'yellow',
-        });
-      }
-
-      const val = $('#latestFoodRecalls').select2('val');
-
-      if (_.isUndefined(val) || _.isEmpty(val)) {
-        return;
-      }
-
-      const self = Template.instance();
-      const fr = self.latestFoodRecalls().fetch();
-      let originState = null;
-      let originCity = null;
-      let mfg = null;
-      let destinationStates = null;
-
-      for (let i = 0; i < fr.length; i++) {
-        if (fr[i].recall_number === val) {
-          window.LUtil.details.update(fr[i]);
-          originState = fr[i].state;
-          originCity = fr[i].city;
-          mfg = fr[i].recalling_firm;
-          destinationStates = fr[i].distribution_pattern;
-        }
-      }
-
-      window.LUtil.markOrigin(originCity, originState, mfg);
-
-      for (let j = 0; j < StatesData.features.length; j++) {
-        if (StatesData.features[j].properties.abbreviation === originState) {
-          window.LUtil.highlightOrigin(originState);
-          window.LUtil.highlightDestination(destinationStates);
-        }
-      }
-      $('.recall-detail').show();
-    },
-
-    'change #latestFoodRecallLimit'() {
-      const template = Template.instance();
-      const reasonFilter = $('#latestFoodRecallReasonFilter').val();
-      const limit = parseInt($('#latestFoodRecallLimit').val(), 10);
-      template.limit.set(limit, 10);
-      const state = $('#stateSelector').val();
-      if (state === null) {
-        template.filter.set({ reason_for_recall: { $regex: reasonFilter, $options: 'i' } });
-      } else {
-        template.filter.set(window.LUtil.getCrit(state, reasonFilter));
-      }
+      return StateAirQualities.latest(template.filter.get(), template.limit.get());
     },
 
     'click #affordanceOpen'() {
@@ -394,40 +241,21 @@
     'click #filMinMax'() {
       if (window.LUtil.filMinMax === 0) {
         window.LUtil.filMinMax = 1;
-        $('#latestFoodRecallForm').show();
+        $('#airQualityForm').show();
         $('#filMinMaxSpan').removeClass('glyphicon glyphicon-plus');
         $('#filMinMaxSpan').addClass('glyphicon glyphicon-minus');
       } else if (window.LUtil.filMinMax === 1) {
         window.LUtil.filMinMax = 0;
-        $('#latestFoodRecallForm').hide();
+        $('#airQualityForm').hide();
         $('#filMinMaxSpan').removeClass('glyphicon glyphicon-minus');
         $('#filMinMaxSpan').addClass('glyphicon glyphicon-plus');
       }
-    },
-
-    'click #applyFilter'() {
-      const template = Template.instance();
-      const reasonFilter = $('#latestFoodRecallReasonFilter').val();
-      const limit = parseInt($('#latestFoodRecallLimit').val(), 10);
-
-      // set the reactive var with updated filter, this.autorun within the
-      // create method will re-run the subscription with the new value every
-      // time this changes.
-      const state = $('#stateSelector').val();
-
-      if (state === null) {
-        template.filter.set({ reason_for_recall: { $regex: reasonFilter, $options: 'i' } });
-      } else {
-        template.filter.set(window.LUtil.getCrit(state, reasonFilter));
-      }
-
-      template.limit.set(limit);
-    },
+    }
   });
 
   Template.map.helpers({
-    latestFoodRecalls() {
-      return Template.instance().latestFoodRecalls();
+    airQualitys() {
+      return Template.instance().airQualitys();
     },
 
     StatesData() {
@@ -445,19 +273,14 @@
     self.limit = new ReactiveVar(10);
     this.autorun(function () {
       // TODO: show loading indicator.
-      self.subscription = self.subscribe('LatestFoodRecalls', self.filter.get(), self.limit.get());
+      self.subscription = self.subscribe('airQualitys', self.filter.get(), self.limit.get());
       if (self.subscription.ready()) {
-        // reset the select2 interface and hide the details
-        $('#latestFoodRecalls').select2({
-          placeholder: 'Select a Recall',
-          allowClear: true,
-        });
-        $('.recall-detail').hide();
+        $('.airQuality-detail').hide();
       }
     });
-    self.latestFoodRecalls = function() {
+    self.airQualitys = function() {
       if (self.subscription.ready()) {
-        return FoodRecalls.latest(self.filter.get(), self.limit.get());
+        return StateAirQualities.latest(self.filter.get(), self.limit.get());
       }
       return false;
     };
@@ -466,18 +289,11 @@
   Template.map.rendered = function() {
     window.LUtil.initMap();
     $('#stateSelector').val('');
-    $('#latestFoodRecalls').val('');
-    $('#latestFoodRecalls').select2({
-      placeholder: 'Select a Recall',
-      allowClear: true,
-    });
-    $('.recall-detail').hide();
+    $('.airQuality-detail').hide();
     $('#stateSelector').select2({
       placeholder: 'Filter by State',
       allowClear: true,
     });
-
-    $('#latestFoodRecallLimit').select2();
 
     if (window.screen.width < 800) {
       $('#forkMe').hide();
