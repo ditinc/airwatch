@@ -1,5 +1,5 @@
 /* LUtil is inspired by leaflet-demo (https://github.com/MeteorHudsonValley/leaflet-demo) */
-/* globals window, L, $, Blaze, Template, Meteor, console, _, ReactiveVar, moment*/
+/* globals window, L, $, Blaze, Template, Meteor, _, ReactiveVar, moment */
 /* globals FoodRecalls, StatesData */
 (function () {
   window.LUtil = {
