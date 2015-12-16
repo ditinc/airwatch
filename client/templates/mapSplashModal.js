@@ -1,9 +1,10 @@
-/*globals Template*/
+/* globals $, Template */
 Template.mapSplashModal.events({
-  'click #gotit' : function(){   
+  'click #gotit'() {
     $('#mapSplashModal').modal('hide');
-  }
+  },
 });
+
 Template.mapSplashModal.rendered = function() {
-  $('#mapSplashModal').modal('show');  
+  $('#mapSplashModal').modal('show');
 };
