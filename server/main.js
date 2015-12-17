@@ -1,5 +1,5 @@
 /* globals _, moment, Meteor, console, async */
-/* globals FoodRecalls */
+/* globals StateAirQualities */
 /* jshint curly:false */
 (function() {
   Meteor.methods({
@@ -45,8 +45,8 @@
      * existing records.  If not, call the remote API to fetch the last 100
      * records, searching by record_date.
      */
-    getInitialFoodRecalls() {
-      if (FoodRecalls.find({}).count() > 0) {
+    getInitialStateAirQualities() {
+      if (StateAirQualities.find({}).count() > 0) {
         return [];
       }
       const dateFormat = 'YYYYMMDD';
@@ -68,7 +68,7 @@
     /**
      * After the server is running, periodically poll the remote API for new data.
      */
-    pollFoodRecalls() {
+    pollStateAirQualities() {
       const dateFormat = 'YYYYMMDD';
       const daysAgo = moment().subtract(1, 'days');
       const today = moment();
@@ -105,8 +105,8 @@
     saveResults(response) {
       const upserts = [];
       if (response.data.results.length > 0) {
-        _.each(response.data.results, function(foodRecall) {
-          upserts.push(FoodRecalls.upsert({ recall_number: foodRecall.recall_number }, foodRecall));
+        _.each(response.data.results, function(stateAirQuality) {
+          upserts.push(StateAirQualities.upsert({ stateCode: stateAirQuality.stateCode }, stateAirQuality));
         });
       }
       return upserts;
@@ -118,15 +118,15 @@
    */
   Meteor.startup(function() {
     async.auto({
-      getInitialFoodRecalls(callback) {
-        const upserts = Meteor.call('getInitialFoodRecalls');
+      getInitialStateAirQualities(callback) {
+        const upserts = Meteor.call('getInitialStateAirQualities');
         callback(null, upserts);
       },
     }, function(err) {
       console.log(err);
     });
     Meteor.setInterval(function() {
-      Meteor.call('pollFoodRecalls');
+      Meteor.call('pollStateAirQualities');
     }, Meteor.settings.POLL_TIMER_SECONDS * 1000);
   });
 })();
