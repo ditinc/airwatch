@@ -1,6 +1,6 @@
-/* globals Meteor, StateAirQualities */
+/* globals Meteor, AirQualityIndexes */
 (function() {
-  Meteor.publish('LatestStateAirQualities', function(filter, limit) {
-    return StateAirQualities.latest(filter, limit);
+  Meteor.publish('LatestAirQualityIndexes', function(filter, limit) {
+    return AirQualityIndexes.latest(filter, limit);
   });
 })();

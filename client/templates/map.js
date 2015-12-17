@@ -1,6 +1,6 @@
 /* LUtil is inspired by leaflet-demo (https://github.com/MeteorHudsonValley/leaflet-demo) */
 /* globals window, L, $, Blaze, Template, Meteor, _, ReactiveVar, moment */
-/* globals StateAirQualities, StatesData */
+/* globals AirQualityIndexes, StatesData */
 (function () {
   window.LUtil = {
     // reference to the single 'map' object to control
@@ -229,7 +229,7 @@
           }
         }
       }
-      return StateAirQualities.latest(template.filter.get(), template.limit.get());
+      return AirQualityIndexes.latest(template.filter.get(), template.limit.get());
     },
 
     'click #affordanceOpen'() {
@@ -271,14 +271,14 @@
     self.limit = new ReactiveVar(10);
     this.autorun(function () {
       // TODO: show loading indicator.
-      self.subscription = self.subscribe('airQualitys', self.filter.get(), self.limit.get());
+      self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
       if (self.subscription.ready()) {
         $('.airQuality-detail').hide();
       }
     });
-    self.airQualitys = function() {
+    self.airQualities = function() {
       if (self.subscription.ready()) {
-        return StateAirQualities.latest(self.filter.get(), self.limit.get());
+        return AirQualityIndexes.latest(self.filter.get(), self.limit.get());
       }
       return false;
     };
