@@ -53,8 +53,6 @@
       $('.airQuality-detail').scrollTop();
       $('.airQuality-detail').hide();
 
-      const self = this;
-
       window.LUtil.detMinMax = 1;
       $('#detMinMaxSpan').removeClass('glyphicon glyphicon-plus');
       $('#detMinMaxSpan').addClass('glyphicon glyphicon-minus');
@@ -250,7 +248,7 @@
         $('#filMinMaxSpan').removeClass('glyphicon glyphicon-minus');
         $('#filMinMaxSpan').addClass('glyphicon glyphicon-plus');
       }
-    }
+    },
   });
 
   Template.map.helpers({
