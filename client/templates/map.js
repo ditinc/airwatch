@@ -279,35 +279,10 @@
       if (self.subscription.ready()) {
         const aqis = AirQualityIndexes.find().fetch();
         for (let a = 0; a < aqis.length; a++) {
-          const curAQI = aqis[a].AQI;
-          let aqiCat = null;
-          switch (true) {
-            case curAQI <= 50:
-              aqiCat = 1;
-              break;
-            case curAQI <= 100:
-              aqiCat = 2;
-              break;
-            case curAQI <= 150:
-              aqiCat = 3;
-              break;
-            case curAQI <= 200:
-              aqiCat = 4;
-              break;
-            case curAQI <= 300:
-              aqiCat = 5;
-              break;
-            case curAQI <= 500:
-              aqiCat = 6;
-              break;
-            default:
-              aqiCat = false;
-              break;
-          }
-
-          if (aqiCat !== false) {
+          const category = aqis[a].Category;
+          if (category >= 1 && category <= 6) {
             const icon = L.divIcon({
-              className: 'AQImarker AQIcategory' + aqiCat,
+              className: 'AQImarker AQIcategory' + category,
               iconSize: null,
             });
             L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
