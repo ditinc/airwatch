@@ -280,7 +280,7 @@
         const aqis = AirQualityIndexes.find().fetch();
         for (let a = 0; a < aqis.length; a++) {
           const curAQI = aqis[a].AQI;
-          let aqiCat = 0;
+          let aqiCat = null;
           switch (true) {
             case curAQI <= 50:
               aqiCat = 1;
@@ -301,14 +301,17 @@
               aqiCat = 6;
               break;
             default:
-              aqiCat = 6;
+              aqiCat = false;
               break;
           }
-          const icon = L.divIcon({
-            className: 'AQImarker AQIcategory' + aqiCat,
-            iconSize: null,
-          });
-          L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+
+          if (aqiCat !== false) {
+            const icon = L.divIcon({
+              className: 'AQImarker AQIcategory' + aqiCat,
+              iconSize: null,
+            });
+            L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+          }
         }
         $('.airQuality-detail').hide();
       }
