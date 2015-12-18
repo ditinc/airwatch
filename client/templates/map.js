@@ -95,10 +95,13 @@
       }
       return parsedStates;
     },
-
+    zoomToFeature(layer) {
+      window.LUtil.map.fitBounds(layer.getBounds());
+    },
     onEachFeature(feature, layer) {
       layer.on({
         click() {
+          window.LUtil.zoomToFeature(layer);
           if (window.LUtil.currentSelectedState !== null) {
             window.LUtil.currentSelectedState.setStyle({
               fillColor: 'white',
@@ -223,6 +226,7 @@
         if (window.LUtil.geojson._layers.hasOwnProperty(key)) {
           if (window.LUtil.geojson._layers[key].feature.properties.abbreviation === state) {
             window.LUtil.currentSelectedState = window.LUtil.geojson._layers[key];
+            window.LUtil.zoomToFeature(window.LUtil.currentSelectedState);
             window.LUtil.geojson._layers[key].setStyle({
               fillColor: 'yellow',
             });
@@ -273,6 +277,39 @@
       // TODO: show loading indicator.
       self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
       if (self.subscription.ready()) {
+        const aqis = AirQualityIndexes.find().fetch();
+        for (let a = 0; a < aqis.length; a++) {
+          const curAQI = aqis[a].AQI;
+          let aqiCat = 0;
+          switch (true) {
+            case curAQI <= 50:
+              aqiCat = 1;
+              break;
+            case curAQI <= 100:
+              aqiCat = 2;
+              break;
+            case curAQI <= 150:
+              aqiCat = 3;
+              break;
+            case curAQI <= 200:
+              aqiCat = 4;
+              break;
+            case curAQI <= 300:
+              aqiCat = 5;
+              break;
+            case curAQI <= 500:
+              aqiCat = 6;
+              break;
+            default:
+              aqiCat = 6;
+              break;
+          }
+          const icon = L.divIcon({
+            className: 'AQImarker AQIcategory' + aqiCat,
+            iconSize: null,
+          });
+          L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+        }
         $('.airQuality-detail').hide();
       }
     });
