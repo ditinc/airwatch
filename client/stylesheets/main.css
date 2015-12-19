@@ -129,3 +129,34 @@ p.intro {
     font-size: 11px;
   }
 }
+
+.AQImarker {
+	border-radius: 50%;
+	width: 15px;
+	height: 15px;
+  border: 1px solid black;
+}
+
+.AQIcategory1{
+  background: #00e400;
+}
+
+.AQIcategory2{
+  background: #ffff00;
+}
+
+.AQIcategory3{
+  background: #ff7e00;
+}
+
+.AQIcategory4{
+  background: #ff0000;
+}
+
+.AQIcategory5{
+  background: #99004c;
+}
+
+.AQIcategory6{
+  background: #7e0023;
+}

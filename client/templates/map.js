@@ -95,10 +95,13 @@
       }
       return parsedStates;
     },
-
+    zoomToFeature(layer) {
+      window.LUtil.map.fitBounds(layer.getBounds());
+    },
     onEachFeature(feature, layer) {
       layer.on({
         click() {
+          window.LUtil.zoomToFeature(layer);
           if (window.LUtil.currentSelectedState !== null) {
             window.LUtil.currentSelectedState.setStyle({
               fillColor: 'white',
@@ -223,6 +226,7 @@
         if (window.LUtil.geojson._layers.hasOwnProperty(key)) {
           if (window.LUtil.geojson._layers[key].feature.properties.abbreviation === state) {
             window.LUtil.currentSelectedState = window.LUtil.geojson._layers[key];
+            window.LUtil.zoomToFeature(window.LUtil.currentSelectedState);
             window.LUtil.geojson._layers[key].setStyle({
               fillColor: 'yellow',
             });
@@ -273,6 +277,17 @@
       // TODO: show loading indicator.
       self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
       if (self.subscription.ready()) {
+        const aqis = AirQualityIndexes.find().fetch();
+        for (let a = 0; a < aqis.length; a++) {
+          const category = aqis[a].Category;
+          if (category >= 1 && category <= 6) {
+            const icon = L.divIcon({
+              className: 'AQImarker AQIcategory' + category,
+              iconSize: null,
+            });
+            L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+          }
+        }
         $('.airQuality-detail').hide();
       }
     });
