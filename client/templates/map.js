@@ -59,6 +59,15 @@
       $('.airQuality-detail').css({ 'height': '250px' });
     },
 
+    showDetails(e) {
+      $('.AQImarkersel').removeClass('AQImarkersel');
+      e.target.options.zIndexOffset = 999999;
+      $('.airQuality-detail').empty();
+      Blaze.renderWithData(Template.airQualityDetails, e.target.aqi, $('.airQuality-detail')[0]);
+      $(e.target._icon).addClass('AQImarkersel');
+      $('.airQuality-detail').show();
+    },
+
     getStateName(stateAbbr) {
       for (let j = 0; j < StatesData.features.length; j++) {
         if (StatesData.features[j].properties.abbreviation === stateAbbr) {
@@ -285,7 +294,9 @@
               className: 'AQImarker AQIcategory' + category,
               iconSize: null,
             });
-            L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+            const marker = L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
+            marker.aqi = aqis[a];
+            marker.on('click', window.LUtil.showDetails);
           }
         }
         $('.airQuality-detail').hide();

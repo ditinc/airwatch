@@ -9,19 +9,13 @@
   </div>
   <br>
   <div id="airQualityDetails">
-    <div><b>Date Reported : </b> {{formatDate this.report_date}}</div>
-    <div><b>Status : </b> {{this.status}} </div>
-    <div><b>Recalling Firm : </b> {{this.recalling_firm}} </div>
-    <div><b>Product Description : </b> {{this.product_description}} </div>
-    <div><b>Reason for Recall : </b> {{this.reason_for_recall}} </div>
-    <div><b>Product Quantity : </b> {{this.product_quantity}} </div>
-    <div><b>Code Information : </b> {{this.code_info}} </div>
-    <div><b>Product Type : </b> {{this.product_type}} </div>
-    <div><b>Recall # : </b> {{this.recall_number}} </div>
-    <div><b>Date Initiated : </b> {{formatDate this.recall_initiation_date}} </div>
-    <div><b>Classification : </b> {{this.classification}} </div>
-    <div><b>State : </b> {{this.state}} </div>
-    <div><b>City : </b> {{this.city}} </div>
-    <div><b>Distribution Pattern : </b> {{this.distribution_pattern}} </div>
+    <div><b>AQI : </b> {{this.AQI}} </div>
+    <div><b>Date Reported : </b> {{formatDate this.UTC}}</div>
+    <div><b>Category : </b> {{this.Category}} </div>
+    <div><b>Parameter : </b> {{this.Parameter}} </div>
+    <div><b>Unit : </b> {{this.Unit}} </div>
+    <div><b>Value : </b> {{this.Value}} </div>
+    <div><b>Latitude : </b> {{this.Latitude}} </div>
+    <div><b>Longitude : </b> {{this.Longitude}} </div>
   </div>
 </template>
