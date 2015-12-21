@@ -11,7 +11,7 @@
      *  @param options.search string - the search template.
      */
     buildEndpointTmpl() {
-      const url = 'http://www.airnowapi.org/aq/data/?startDate=<%obj.startDate%>&endDate=<%obj.endDate%>&parameters=PM25&BBOX=-124.205070,28.716781,-75.337882,45.419415&dataType=A&format=application/json&verbose=0&API_KEY=50A21A36-4F81-44F5-A331-C91522E6116C';
+      const url = 'http://www.airnowapi.org/aq/data/?startDate=<%obj.startDate%>&endDate=<%obj.endDate%>&parameters=O3,PM25,PM10,CO,NO2,SO2&BBOX=-179.999,-66.987172,84.795532,83.699551&dataType=A&format=application/json&verbose=0&API_KEY=50A21A36-4F81-44F5-A331-C91522E6116C';
       return _.template(url);
     },
 
