@@ -6,7 +6,7 @@ Template.airQualityDetails.events({
       $('#airQualityDetails').show();
       $('#detMinMaxSpan').removeClass('glyphicon glyphicon-plus');
       $('#detMinMaxSpan').addClass('glyphicon glyphicon-minus');
-      $('.airQuality-detail').css({ 'height': '250px' });
+      $('.airQuality-detail').css({ 'height': '175px' });
     } else if (window.LUtil.detMinMax === 1) {
       window.LUtil.detMinMax = 0;
       $('#airQualityDetails').hide();
