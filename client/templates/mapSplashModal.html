@@ -9,22 +9,22 @@
         <div class="modal-body">
           <div class="splash">
             <p class="intro">
-              Select a recall from the Latest Food Recalls drop down to see the source state of the
-              food item recall and the states to which the product was shipped. You can change the
-              list in the drop down by selecting a state on the map or the state filter.
-              The most recent 60 days of recall items are selected automatically from
-              <a href="http://open.fda.gov" target="_blank">open.fda.gov</a> when the filters are changed.
+              Select a state from the drop down to zoom to that state, or click within the state on an area without a marker.  Click a marker to see details about the air quality station. Data pulled from
+              <a href="http://docs.airnowapi.org" target="_blank">docs.airnowapi.org</a>.
             </p>
             <div class="row">
               <div class="col-xs-6">
                 <div id="mapLegendPanel" class="panel panel-default">
                   <div class="panel-heading">
-                    <b class="panel-title">Legend</b>
+                    <b class="panel-title">AQI Legend</b>
                   </div>
                   <div class="panel-body">
-                    <div><span class="legendBlock origin"></span> Origin</div>
-                    <div><span class="legendBlock destination"></span> Destination</div>
-                    <div><span class="legendBlock originDestination"></span> Origin & Destination</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory1 pull-left legendItemPad"></div> Good</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory2 pull-left legendItemPad"></div> Moderate</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory3 pull-left legendItemPad"></div> Unhealthy for Sensitive Groups</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory4 pull-left legendItemPad"></div> Unhealthy</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory5 pull-left legendItemPad"></div> Very Unhealthy</div>
+                    <div class="legendPad"><div class="AQImarker AQIcategory6 pull-left legendItemPad"></div> Hazardous</div>
                   </div>
                 </div>
               </div>

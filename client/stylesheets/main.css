@@ -19,7 +19,15 @@ body {
 }
 
 #mapLegendPanel {
-  width: 180px;
+  width: 280px;
+}
+
+.legendPad{
+  margin: 5px 5px 5px 5px;
+}
+
+.legendItemPad{
+  margin-right: 10px;
 }
 
 .airQualityDetailsHeader{
