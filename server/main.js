@@ -24,9 +24,8 @@
      * existing records.  If not, call the remote API to fetch new data.
      */
     getInitialAirQualityIndexes() {
-      if (AirQualityIndexes.find({}).count() > 0) {
-        return [];
-      }
+      AirQualityIndexes.remove({});
+      console.log('Pulling new data...');
       const dateFormat = 'YYYY-MM-DDTHH';
       const today = moment();
       const searchOptions = {
@@ -42,21 +41,24 @@
      * After the server is running, periodically poll the remote API for new data.
      */
     pollAirQualityIndexes() {
-      const dateFormat = 'YYYY-MM-DDTHH';
+      //  clear db
+      AirQualityIndexes.remove({});
+      return;
+      /* const dateFormat = 'YYYY-MM-DDTHH';
       const today = moment();
       const searchOptions = {
         startDate: today.format(dateFormat),
         endDate: today.format(dateFormat),
       };
       const endpoint = Meteor.call('buildEndpoint', searchOptions);
-      return Meteor.call('fetchAsyncResponse', endpoint);
+      return Meteor.call('fetchAsyncResponse', endpoint);*/
     },
 
     /**
      * Fetch the data asynchronously using HTTP GET.
      */
     fetchAsyncResponse(endpoint) {
-      this.unblock();
+      //  this.unblock();
       let response;
       try {
         response = Meteor.http.get(endpoint);
@@ -79,6 +81,17 @@
       return upserts;
     },
   });
+
+  Meteor.setInterval(function() {
+    async.auto({
+      getInitialAirQualityIndexes(callback) {
+        const upserts = Meteor.call('getInitialAirQualityIndexes');
+        callback(null, upserts);
+      },
+    }, function(err) {
+      console.log(err);
+    });
+  }, Meteor.settings.POLL_TIMER_SECONDS * 1000);
 
   /**
    * Called upon initial server warm-up
