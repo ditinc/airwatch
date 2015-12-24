@@ -292,15 +292,41 @@
         added (id, fields) {
           fields._id = id;
           icon.options.className = 'AQImarker AQIcategory' + fields.Category;
+          if (fields.Latitude === null) {
+            return;
+          }
           const marker = L.marker([fields.Latitude, fields.Longitude], { icon }).addTo(window.LUtil.map);
           marker.aqi = fields;
           window.LUtil.markers.push(marker);
           marker.on('click', window.LUtil.showDetails);
-          //  console.log('added: ', id);
+          console.log('added: ', id);
         },
         changed (id, fields) {
-          //  console.log('changed: ', id);
-          //  console.log('fields: ', fields);
+          for (let j = 0; j < window.LUtil.markers.length; j++) {
+            if (window.LUtil.markers[j].aqi._id === id) {
+              if (fields.Category !== undefined && fields.Category !== window.LUtil.markers[j].aqi.Category) {
+                window.LUtil.map.removeLayer(window.LUtil.markers[j]);
+                window.LUtil.markers[j].aqi.Category = fields.Category;
+                icon.options.className = 'AQImarker AQIcategory' + fields.Category;
+                window.LUtil.markers[j].setIcon(icon);
+                window.LUtil.map.addLayer(window.LUtil.markers[j]);
+              }
+              if (fields.Parameter !== undefined) {
+                window.LUtil.markers[j].aqi.Parameter = fields.Parameter;
+              }
+              if (fields.UTC !== undefined) {
+                window.LUtil.markers[j].aqi.UTC = fields.UTC;
+              }
+              if (fields.Unit !== undefined) {
+                window.LUtil.markers[j].aqi.Unit = fields.Unit;
+              }
+              if (fields.AQI !== undefined) {
+                window.LUtil.markers[j].aqi.AQI = fields.AQI;
+              }
+              console.log('changed: ', id);
+              return;
+            }
+          }
         },
         removed (id) {
           for (let j = 0; j < window.LUtil.markers.length; j++) {
@@ -309,7 +335,7 @@
               window.LUtil.markers.splice(j, 1);
             }
           }
-          //  console.log('removed: ', id);
+          console.log('removed: ', id);
         },
       });
     });
