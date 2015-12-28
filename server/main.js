@@ -1,8 +1,11 @@
-/* globals _, moment, Meteor, console, async */
+/* globals _, moment, Meteor, async */
 /* globals AirQualityIndexes */
 /* jshint curly:false */
 (function() {
   Meteor.methods({
+    getErrors() {
+      return Meteor.errs;
+    },
     /**
      *  The endpoint is built from the search template.  This is
      *  the actual URL sent to the remote API.
@@ -23,8 +26,6 @@
      * existing records.  If not, call the remote API to fetch new data.
      */
     getInitialAirQualityIndexes() {
-      //  AirQualityIndexes.remove({});
-      console.log('Refreshing data...');
       const dateFormat = 'YYYY-MM-DDTHH';
       const today = moment();
       const searchOptions = {
@@ -40,7 +41,7 @@
      * Fetch the data asynchronously using HTTP GET.
      */
     fetchAsyncResponse(endpoint) {
-      //  this.unblock();
+      this.unblock();
       let response;
       try {
         response = Meteor.http.get(endpoint);
@@ -86,9 +87,10 @@
       getInitialAirQualityIndexes(callback) {
         const upserts = Meteor.call('getInitialAirQualityIndexes');
         callback(null, upserts);
+        Meteor.errs = undefined;
       },
     }, function(err) {
-      console.log(err);
+      Meteor.err = err;
     });
   }, Meteor.settings.POLL_TIMER_SECONDS * 1000);
 
@@ -100,9 +102,10 @@
       getInitialAirQualityIndexes(callback) {
         const upserts = Meteor.call('getInitialAirQualityIndexes');
         callback(null, upserts);
+        Meteor.errs = undefined;
       },
     }, function(err) {
-      console.log(err);
+      Meteor.err = err;
     });
   });
 })();

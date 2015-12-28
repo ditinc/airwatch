@@ -220,7 +220,6 @@
 
   Template.map.events({
     'change #stateSelector'(event) {
-      //  window.LUtil.resetMap();
       const state = $(event.currentTarget).val();
       const template = Template.instance();
 
@@ -298,7 +297,6 @@
           marker.aqi = fields;
           window.LUtil.markers.push(marker);
           marker.on('click', window.LUtil.showDetails);
-          console.log('added: ', id);
         },
         changed (id, fields) {
           for (let j = 0; j < window.LUtil.markers.length; j++) {
@@ -306,7 +304,10 @@
               if (fields.Category !== undefined && fields.Category !== window.LUtil.markers[j].aqi.Category) {
                 window.LUtil.map.removeLayer(window.LUtil.markers[j]);
                 window.LUtil.markers[j].aqi.Category = fields.Category;
-                icon.options.className = 'AQImarker AQIcategory' + fields.Category;
+                const icon = L.divIcon({
+                  className: 'AQImarker AQIcategory' + fields.Category,
+                  iconSize: null,
+                });
                 window.LUtil.markers[j].setIcon(icon);
                 window.LUtil.map.addLayer(window.LUtil.markers[j]);
               }
@@ -322,7 +323,6 @@
               if (fields.AQI !== undefined) {
                 window.LUtil.markers[j].aqi.AQI = fields.AQI;
               }
-              console.log('changed: ', id);
               return;
             }
           }
@@ -334,7 +334,6 @@
               window.LUtil.markers.splice(j, 1);
             }
           }
-          console.log('removed: ', id);
         },
       });
     });
@@ -360,5 +359,21 @@
     }
 
     Blaze.render(Template.mapSplashModal, $('<div>').appendTo('body').get(0));
+    Meteor.call('getErrors', function(error, result) {
+      if (error !== undefined) {
+        Meteor.err = error;
+      } else if (result !== undefined) {
+        Meteor.err = result;
+      }
+    });
+
+    $('#mapSplashModal').on('hidden.bs.modal', function () {
+      if (Meteor.err !== undefined) {
+        Blaze.render(Template.errorModal, $('<div>').appendTo('body').get(0));
+        $('#errorMessage').html(Meteor.err);
+        $('#errorModal').modal('show');
+        Meteor.err = undefined;
+      }
+    });
   };
 })();
