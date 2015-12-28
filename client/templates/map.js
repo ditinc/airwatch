@@ -282,16 +282,15 @@
     const self = Template.instance();
     self.filter = new ReactiveVar({});
     self.limit = new ReactiveVar(10);
-    const icon = L.divIcon({
-      className: 'AQImarker AQIcategory' + 1,
-      iconSize: null,
-    });
     self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
     this.autorun(function () {
       AirQualityIndexes.find().observeChanges({
         added (id, fields) {
           fields._id = id;
-          icon.options.className = 'AQImarker AQIcategory' + fields.Category;
+          const icon = L.divIcon({
+            className: 'AQImarker AQIcategory' + fields.Category,
+            iconSize: null,
+          });
           if (fields.Latitude === null) {
             return;
           }
