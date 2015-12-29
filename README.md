@@ -45,7 +45,7 @@ Configuration for the app (Meteor in .meteor), CircleCI (circle.yml), and Tutum 
 
 ### Continuous Monitoring
 
-The release containers are monitored by New Relic. The Tutum stack consists of 2 HAProxy (http://www.haproxy.org/) containers -- one for production/release, and one for the master branch, doing round robin load balancing to 4 Airwatch containers. Each set of 2 Airwatch containers share a MongoDB container. Two New Relic container monitor half of the running containers each.
+The release containers are monitored by New Relic. The Tutum stack consists of 2 HAProxy (http://www.haproxy.org/) containers -- one for production/release, and one for the master branch, doing round robin load balancing to 4 Airwatch containers. Each set of 2 Airwatch containers share a MongoDB container. Two New Relic containers monitor half of the running containers each.
 
 ### Unit Tests
 
