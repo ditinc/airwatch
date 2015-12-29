@@ -30,6 +30,10 @@ deployment:
   master:
     branch: master
     commands:
+      - cd airwatch
+      - docker login -e "$DOCKERHUB_EMAIL" -u "$DOCKERHUB_USER" -p "$DOCKERHUB_API"
+      - docker build -t ditinc/airwatch .
+      - docker push ditinc/airwatch
       - docker login -e "$TUTUM_EMAIL" -u "$TUTUM_USER" -p "$TUTUM_APIKEY" tutum.co
       - docker tag tutum.co/sjmatta/airwatch tutum.co/sjmatta/airwatch:SNAPSHOT
       - sudo pip install tutum
