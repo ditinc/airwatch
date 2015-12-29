@@ -1,4 +1,4 @@
-# Airwatch
+![Logo](https://cloud.githubusercontent.com/assets/3422014/12037101/c4b76812-ae19-11e5-881e-61981fe662c6.png)
 
 Airwatch is an open web application that consumes data from the AirNow API (https://docs.airnowapi.org/Data/query) and allows a visitor to view the reported events on a map.
 
@@ -69,3 +69,7 @@ There are several ways to run the application. You can use the badge above to cr
 2. Launch the required Mongo database: ```docker run -d --name mongo mongo```
 3. Launch the Airwatch container: ```docker run -d --name airwatch --link mongo:mongo -e ROOT_URL=http://localhost -p 80:80 sjmatta/airwatch```
 4. Navigate to http://localhost/
+
+### Credits
+Hot Air Balloon graphic by <a href="http://www.freepik.com/">Freepik</a> from <a href="http://www.flaticon.com/">Flaticon</a> is licensed under <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>. Made with <a href="http://logomakr.com" title="Logo Maker">Logo Maker</a>
+* [Edit logo](http://logomakr.com/5PMD6w)
