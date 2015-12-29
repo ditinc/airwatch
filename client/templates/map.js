@@ -5,6 +5,7 @@
   window.LUtil = {
     // reference to the single 'map' object to control
     map: null,
+    markers: [],
     geojson: null,
     details: null,
     currentSelectedState: null,
@@ -56,7 +57,7 @@
       window.LUtil.detMinMax = 1;
       $('#detMinMaxSpan').removeClass('glyphicon glyphicon-plus');
       $('#detMinMaxSpan').addClass('glyphicon glyphicon-minus');
-      $('.airQuality-detail').css({ 'height': '250px' });
+      $('.airQuality-detail').css({ 'height': '175px' });
     },
 
     showDetails(e) {
@@ -110,7 +111,6 @@
     onEachFeature(feature, layer) {
       layer.on({
         click() {
-          window.LUtil.zoomToFeature(layer);
           if (window.LUtil.currentSelectedState !== null) {
             window.LUtil.currentSelectedState.setStyle({
               fillColor: 'white',
@@ -220,7 +220,6 @@
 
   Template.map.events({
     'change #stateSelector'(event) {
-      window.LUtil.resetMap();
       const state = $(event.currentTarget).val();
       const template = Template.instance();
 
@@ -282,25 +281,61 @@
     const self = Template.instance();
     self.filter = new ReactiveVar({});
     self.limit = new ReactiveVar(10);
+    self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
     this.autorun(function () {
-      // TODO: show loading indicator.
-      self.subscription = self.subscribe('LatestAirQualityIndexes', self.filter.get(), self.limit.get());
-      if (self.subscription.ready()) {
-        const aqis = AirQualityIndexes.find().fetch();
-        for (let a = 0; a < aqis.length; a++) {
-          const category = aqis[a].Category;
-          if (category >= 1 && category <= 6) {
-            const icon = L.divIcon({
-              className: 'AQImarker AQIcategory' + category,
-              iconSize: null,
-            });
-            const marker = L.marker([aqis[a].Latitude, aqis[a].Longitude], { icon }).addTo(window.LUtil.map);
-            marker.aqi = aqis[a];
-            marker.on('click', window.LUtil.showDetails);
+      AirQualityIndexes.find().observeChanges({
+        added (id, fields) {
+          fields._id = id;
+          const icon = L.divIcon({
+            className: 'AQImarker AQIcategory' + fields.Category,
+            iconSize: null,
+          });
+          if (fields.Latitude === null) {
+            return;
           }
-        }
-        $('.airQuality-detail').hide();
-      }
+          const marker = L.marker([fields.Latitude, fields.Longitude], { icon }).addTo(window.LUtil.map);
+          marker.aqi = fields;
+          window.LUtil.markers.push(marker);
+          marker.on('click', window.LUtil.showDetails);
+        },
+        changed (id, fields) {
+          for (let j = 0; j < window.LUtil.markers.length; j++) {
+            if (window.LUtil.markers[j].aqi._id === id) {
+              if (fields.Category !== undefined && fields.Category !== window.LUtil.markers[j].aqi.Category) {
+                window.LUtil.map.removeLayer(window.LUtil.markers[j]);
+                window.LUtil.markers[j].aqi.Category = fields.Category;
+                const icon = L.divIcon({
+                  className: 'AQImarker AQIcategory' + fields.Category,
+                  iconSize: null,
+                });
+                window.LUtil.markers[j].setIcon(icon);
+                window.LUtil.map.addLayer(window.LUtil.markers[j]);
+              }
+              if (fields.Parameter !== undefined) {
+                window.LUtil.markers[j].aqi.Parameter = fields.Parameter;
+              }
+              if (fields.UTC !== undefined) {
+                window.LUtil.markers[j].aqi.UTC = fields.UTC;
+              }
+              if (fields.Unit !== undefined) {
+                window.LUtil.markers[j].aqi.Unit = fields.Unit;
+              }
+              if (fields.AQI !== undefined) {
+                window.LUtil.markers[j].aqi.AQI = fields.AQI;
+              }
+              return;
+            }
+          }
+        },
+        removed (id) {
+          for (let j = 0; j < window.LUtil.markers.length; j++) {
+            if (window.LUtil.markers[j].aqi._id === id) {
+              window.LUtil.map.removeLayer(window.LUtil.markers[j]);
+              window.LUtil.markers.splice(j, 1);
+            }
+          }
+        },
+      });
     });
     self.airQualities = function() {
       if (self.subscription.ready()) {
@@ -324,5 +359,21 @@
     }
 
     Blaze.render(Template.mapSplashModal, $('<div>').appendTo('body').get(0));
+    Meteor.call('getErrors', function(error, result) {
+      if (error !== undefined) {
+        Meteor.err = error;
+      } else if (result !== undefined) {
+        Meteor.err = result;
+      }
+    });
+
+    $('#mapSplashModal').on('hidden.bs.modal', function () {
+      if (Meteor.err !== undefined) {
+        Blaze.render(Template.errorModal, $('<div>').appendTo('body').get(0));
+        $('#errorMessage').html(Meteor.err);
+        $('#errorModal').modal('show');
+        Meteor.err = undefined;
+      }
+    });
   };
 })();

@@ -1,0 +1,22 @@
+<template name="errorModal">
+  <div id="errorModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div id="errorModalContent" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="errorModalTitle">An error occured.</h4>
+        </div>
+        <div class="modal-body">
+          <div class="splash">
+            <p class="intro" id="errorMessage">
+            </p>
+            <p class="intro" id="errorRecourse">
+              Open a <a href="https://github.com/ditinc/airwatch/issues/new" target="_blank">Github issue</a>, or try again later.          
+            </p>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

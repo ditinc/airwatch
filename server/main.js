@@ -1,9 +1,11 @@
-/* globals _, moment, Meteor, console, async */
+/* globals _, moment, Meteor, async */
 /* globals AirQualityIndexes */
 /* jshint curly:false */
 (function() {
   Meteor.methods({
-
+    getErrors() {
+      return Meteor.errs;
+    },
     /**
      *  The endpoint is built from the search template.  This is
      *  the actual URL sent to the remote API.
@@ -11,7 +13,7 @@
      *  @param options.search string - the search template.
      */
     buildEndpointTmpl() {
-      const url = 'http://www.airnowapi.org/aq/data/?startDate=<%obj.startDate%>&endDate=<%obj.endDate%>&parameters=O3,PM25,PM10,CO,NO2,SO2&BBOX=-179.999,-66.987172,84.795532,83.699551&dataType=A&format=application/json&verbose=0&API_KEY=50A21A36-4F81-44F5-A331-C91522E6116C';
+      const url = 'http://www.airnowapi.org/aq/data/?startDate=<%obj.startDate%>&endDate=<%obj.endDate%>&parameters=PM25&BBOX=-179.999,-66.987172,84.795532,83.699551&dataType=A&format=application/json&verbose=0&API_KEY=50A21A36-4F81-44F5-A331-C91522E6116C';
       return _.template(url);
     },
 
@@ -24,9 +26,6 @@
      * existing records.  If not, call the remote API to fetch new data.
      */
     getInitialAirQualityIndexes() {
-      if (AirQualityIndexes.find({}).count() > 0) {
-        return [];
-      }
       const dateFormat = 'YYYY-MM-DDTHH';
       const today = moment();
       const searchOptions = {
@@ -34,20 +33,6 @@
         endDate: today.format(dateFormat),
       };
 
-      const endpoint = Meteor.call('buildEndpoint', searchOptions);
-      return Meteor.call('fetchAsyncResponse', endpoint);
-    },
-
-    /**
-     * After the server is running, periodically poll the remote API for new data.
-     */
-    pollAirQualityIndexes() {
-      const dateFormat = 'YYYY-MM-DDTHH';
-      const today = moment();
-      const searchOptions = {
-        startDate: today.format(dateFormat),
-        endDate: today.format(dateFormat),
-      };
       const endpoint = Meteor.call('buildEndpoint', searchOptions);
       return Meteor.call('fetchAsyncResponse', endpoint);
     },
@@ -73,12 +58,41 @@
       const upserts = [];
       if (response.length > 0) {
         _.each(response, function(aqi) {
-          upserts.push(AirQualityIndexes.upsert({ lat: aqi.Latitude, lon: aqi.Longitude }, aqi));
+          if (aqi.Latitude === undefined || aqi.Longitude === undefined) {
+            return;
+          }
+          if (aqi.Category < 1 || aqi.Category > 6) {
+            return;
+          }
+          const existingAqi = AirQualityIndexes.findOne({ 'Latitude': aqi.Latitude, Longitude: aqi.Longitude });
+          if (existingAqi !== undefined) {
+            let canUpsert = false;
+            if (existingAqi.AQI !== aqi.AQI || existingAqi.Category !== aqi.Category || existingAqi.UTC !== aqi.UTC) {
+              canUpsert = true;
+            }
+            if (canUpsert) {
+              upserts.push(AirQualityIndexes.upsert({ Latitude: aqi.Latitude, Longitude: aqi.Longitude }, aqi));
+            }
+          } else {
+            upserts.push(AirQualityIndexes.upsert({ Latitude: aqi.Latitude, Longitude: aqi.Longitude }, aqi));
+          }
         });
       }
       return upserts;
     },
   });
+
+  Meteor.setInterval(function() {
+    async.auto({
+      getInitialAirQualityIndexes(callback) {
+        const upserts = Meteor.call('getInitialAirQualityIndexes');
+        callback(null, upserts);
+        Meteor.errs = undefined;
+      },
+    }, function(err) {
+      Meteor.err = err;
+    });
+  }, Meteor.settings.POLL_TIMER_SECONDS * 1000);
 
   /**
    * Called upon initial server warm-up
@@ -88,9 +102,10 @@
       getInitialAirQualityIndexes(callback) {
         const upserts = Meteor.call('getInitialAirQualityIndexes');
         callback(null, upserts);
+        Meteor.errs = undefined;
       },
     }, function(err) {
-      console.log(err);
+      Meteor.err = err;
     });
   });
 })();
